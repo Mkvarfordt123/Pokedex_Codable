@@ -9,7 +9,6 @@ import UIKit
 
 class PokemonViewController: UIViewController {
 
-    @IBOutlet weak var pokemonSearchBar: UISearchBar!
     @IBOutlet weak var pokemonIDLabel: UILabel!
     @IBOutlet weak var pokemonNameLabel: UILabel!
     @IBOutlet weak var pokemonSpriteImageView: UIImageView!
@@ -19,23 +18,21 @@ class PokemonViewController: UIViewController {
         super.viewDidLoad()
         pokemonMovesTableView.delegate = self
         pokemonMovesTableView.dataSource = self
-        pokemonSearchBar.delegate = self
+        updateViews(for: pokemon)
     }
     
     var pokemon: PokemonDict?
+    var pokemonSprite: UIImage?
     
-    func updateViews(for pokemon: PokemonDict) {
-        NetworkingController.fetchImage(for: pokemon) { image in
-            guard let image = image else {return}
-            DispatchQueue.main.async {
-                self.pokemon = pokemon
-                self.pokemonSpriteImageView.image = image
-                self.pokemonIDLabel.text = ("No:\(pokemon.id)")
-                self.pokemonNameLabel.text = pokemon.name.capitalized
-                self.pokemonMovesTableView.reloadData()
+    func updateViews(for pokemon: PokemonDict?) {
+        
+        guard let pokemon = pokemon else { return }
+        self.pokemonSpriteImageView.image = pokemonSprite
+        self.pokemonIDLabel.text = ("No:\(pokemon.id)")
+        self.pokemonNameLabel.text = pokemon.name.capitalized
+        self.pokemonMovesTableView.reloadData()
+        
             }
-        }
-    }
     
 }// End
 
@@ -60,13 +57,6 @@ extension PokemonViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension PokemonViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        NetworkingController.fetchPokemon(with: searchText) { pokemon in
-            guard let pokemon = pokemon else {
-                return
-            }
-            self.updateViews(for: pokemon)
-        }
-    }
-}
+
+    
+

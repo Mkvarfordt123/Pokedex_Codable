@@ -38,7 +38,32 @@ class NetworkingController {
             }
         }.resume()
     }
-    
+  static func fetchPokedex(completion: @escaping (Result<PokedexTopLevel, ResultError>) -> Void) {
+        //compose the url
+        guard let baseURL = URL(string: baseURLString) else {return}
+        var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
+        urlComponents?.path = "/api/v2/pokemon/"
+
+        guard let finalURL = urlComponents?.url else {return}
+        print(finalURL)
+        //perform the data task
+      URLSession.shared.dataTask(with: finalURL) { dTaskData, _, error in
+          if let error = error {
+              print("Encountered error: \(error.localizedDescription)")
+              completion(.failure(.thrownError(error)))
+          }
+          
+          guard let pokemonData = dTaskData else {return}
+          
+          do {
+              let pokedex = try JSONDecoder().decode(PokedexTopLevel.self, from: pokemonData)
+              completion(.success(pokedex))
+          } catch {
+              print("Encountered error when decoding the data:", error.localizedDescription)
+              completion(.failure(.unableToDecode))
+          }
+      }.resume()
+    }
     
     static func fetchImage(for pokemon: PokemonDict, completetion: @escaping (Result<UIImage, ResultError>) -> Void) {
         guard let imageURL = URL(string: pokemon.sprites.frontShiny) else {return}
