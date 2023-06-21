@@ -22,9 +22,9 @@ class PokemonViewController: UIViewController {
         pokemonSearchBar.delegate = self
     }
     
-    var pokemon: Pokemon?
+    var pokemon: PokemonDict?
     
-    func updateViews(for pokemon: Pokemon) {
+    func updateViews(for pokemon: PokemonDict) {
         NetworkingController.fetchImage(for: pokemon) { image in
             guard let image = image else {return}
             DispatchQueue.main.async {
@@ -54,8 +54,8 @@ extension PokemonViewController: UITableViewDelegate, UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "moveCell", for: indexPath)
         guard let pokemon = pokemon else {return UITableViewCell() }
-        let move = pokemon.moves[indexPath.row]
-        cell.textLabel?.text = move
+        let moveDict = pokemon.moves[indexPath.row]
+        cell.textLabel?.text = moveDict.move.name
         return cell
     }
 }
